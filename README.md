@@ -1,36 +1,27 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Слово AI — Персональный AI-репетитор по русскому языку
 
-## Getting Started
+**Live Demo (Vercel):** https://ai-tutor-russian.vercel.app
 
-First, run the development server:
+## Возможности
+- **Тариф Free:** 10 минут практики в день (автоматический сброс каждый день в 12:00 / полдень), 5 бесплатных базовых уроков, квизы, грамматика и правописание.
+- **Тариф Pro (Stripe):** безлимитное время практики, **Speaking**, **Listening**, проверка произношения и ударений, глубокий разбор ошибок и все уровни `A1–C2`.
+- **Этапы обучения:**
+  - **Начальный:** `A1` (Азбука и основы), `A2` (Базовое общение)
+  - **Продвинутый:** `B1` (Уверенная речь), `B2` (Свободное владение)
+  - **Эксперт:** `C1` (Профессиональный), `C2` (Мастерство и литература)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Стек технологий
+- **Frontend:** Next.js 16 (App Router, TypeScript), Tailwind CSS, `shadcn/ui`
+- **Типографика:** `Great Vibes` (заголовки) и `Geist Mono` (основной текст)
+- **AI-модель:** Google `gemini-3.5-flash-lite` (`@google/genai`)
+- **База данных и хранилище:** Neon Lakebase Postgres (Prisma) + Neon Object Storage (`files-sdk/neon`)
+- **Оплата:** Stripe Checkout, Billing Portal и Webhooks
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Локальный запуск
+1. Скопируйте `.env.example` в `.env` и заполните ключи (`DATABASE_URL`, `GEMINI_API_KEY`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`).
+2. Установите зависимости и примените схему Prisma:
+   ```bash
+   npm install
+   npx prisma db push
+   npm run dev
+   ```
