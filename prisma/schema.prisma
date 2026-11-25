@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL_UNPOOLED")
+}
+
+enum Plan {
+  FREE
+  PRO
+}
+
+enum Stage {
+  BEGINNER
+  ADVANCED
+  EXPERT
+}
+
+model User {
+  id                   String            @id @default(cuid())
+  name                 String
+  email                String            @unique
+  passwordHash         String
+  plan                 Plan              @default(FREE)
+  currentStage         Stage             @default(BEGINNER)
+  currentLevel         String            @default("A1")
+  dailySecondsUsed     Int               @default(0)
+  lastResetAt          DateTime          @default(now())
+  streakDays           Int               @default(1)
+  stripeCustomerId     String?           @unique
+  stripeSubscriptionId String?           @unique
+  subscriptionStatus   String?
+  lessonProgress       LessonProgress[]
+  practiceSessions     PracticeSession[]
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @updatedAt
+}
+
+model LessonProgress {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lessonSlug  String
+  stage       Stage
+  level       String
+  completed   Boolean   @default(false)
+  score       Int       @default(0)
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([userId, lessonSlug])
+}
+
+model PracticeSession {
+  id                String   @id @default(cuid())
+  userId            String
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mode              String
+  durationSeconds   Int      @default(0)
+  messagesJson      String   @default("[]")
+  errorAnalysisJson String?
+  createdAt         DateTime @default(now())
+}
