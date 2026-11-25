@@ -2,14 +2,32 @@ import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { syncAndGetQuota } from "@/lib/quota";
+import { syncStripeSubscription } from "@/lib/stripe";
 import { prisma } from "@/lib/prisma";
 import { Navbar } from "@/components/navbar";
 import { DashboardClient } from "@/components/dashboard-client";
 
-async function DashboardContent() {
-  const user = await getCurrentUser();
+async function DashboardContent({
+  searchParamsPromise,
+}: {
+  searchParamsPromise: Promise<{ upgraded?: string; session_id?: string }>;
+}) {
+  let user = await getCurrentUser();
   if (!user) {
     redirect("/login");
+  }
+
+  const params = await searchParamsPromise;
+  if (user.plan === "FREE" && (params.session_id || user.stripeCustomerId)) {
+    const activated = await syncStripeSubscription(
+      user.id,
+      user.stripeCustomerId,
+      params.session_id
+    );
+    if (activated) {
+      const refreshed = await getCurrentUser();
+      if (refreshed) user = refreshed;
+    }
   }
 
   const quota = await syncAndGetQuota(user.id);
@@ -47,7 +65,9 @@ async function DashboardContent() {
   );
 }
 
-export default function DashboardPage() {
+export default function DashboardPage(context: {
+  searchParams: Promise<{ upgraded?: string; session_id?: string }>;
+}) {
   return (
     <div className="min-h-screen flex flex-col bg-[#F6F4F2]">
       <Suspense
@@ -57,7 +77,7 @@ export default function DashboardPage() {
           </div>
         }
       >
-        <DashboardContent />
+        <DashboardContent searchParamsPromise={context.searchParams} />
       </Suspense>
     </div>
   );

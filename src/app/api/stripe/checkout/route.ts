@@ -64,7 +64,7 @@ export async function POST() {
     metadata: {
       userId: user.id,
     },
-    success_url: `${appUrl}/dashboard?upgraded=true`,
+    success_url: `${appUrl}/dashboard?upgraded=true&session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${appUrl}/pricing?canceled=true`,
   });
 
